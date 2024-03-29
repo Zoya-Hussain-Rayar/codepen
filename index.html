@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.css">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        body{
+            overflow-x:hidden ;
+        }
+        .tags{
+            display: flex;
+            margin:1rem 2rem;
+            margin-bottom: 0.4rem;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        .tags h3{
+            position: relative;
+            left: 0.5rem;
+            color: rgb(120, 114, 114);
+        }
+        .tags h3:nth-child(2){
+            left: 31%;
+        }
+        .tags h3:nth-child(3){
+            left: 62.5%;
+        }
+        .editor-container {
+            display: flex;
+            margin-bottom:1rem;
+        }
+
+        .CodeMirror {
+            width: 32.4%;
+            min-width:250px;
+            height: 30vh;
+            background-color: #ded8d8;
+            margin: 0 0.3rem;
+            padding: 0.5rem;
+        }
+
+        .preview {
+            width: 100%;
+            min-height: 55vh;
+            padding: 1rem;
+            background-color: rgb(84, 80, 80);
+            color: white;
+            white-space:pre-wrap; 
+        }
+        .button{
+            background: transparent;
+            padding:7px 23px;
+            border-radius: 20px;
+            border: 2px solid rgb(120, 118, 118);
+            margin: 0 20px;
+            margin-bottom: 1rem;
+            width:100px;
+            cursor: pointer;
+            transition: all 0.6s ease ;
+            color: gray;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: lowercase;
+        }
+        .button:hover{
+            background-color:rgb(120, 118, 118) ;
+            color: #ded8d8;
+        }
+        @media (max-width:750px) {
+            .editor-container{
+            display: flex;
+            /* flex-wrap: wrap; */
+            flex-direction: column;
+            width: 100%;
+            }
+            .CodeMirror {
+            width: 99%;
+            height: 27vh;
+            margin-bottom: 1rem;
+            background-color: #ded8d8;
+            margin: 1rem 0.3rem;
+        }
+        .tags{
+            display: flex;
+            flex-direction:column;
+            margin:1rem;
+            width: 100%;
+            mix-blend-mode: lighten;
+        }
+        .tags h3{
+            position: absolute;
+            top: 1.5rem;
+            left: 0.3rem;
+            color: rgb(120, 114, 114);
+            z-index: 100;
+        }
+        .tags h3:nth-child(2){
+            left: 0.3rem ;
+            top: 35vh;
+        }
+        .tags h3:nth-child(3){
+            left: 0.3rem ;
+             top: 67.4vh;
+        }
+
+        }
+        @media (max-height:760px) {
+            .tags h3:nth-child(2){
+            left: 0.3rem ;
+            top: 37vh;
+        }
+        .tags h3:nth-child(3){
+            left: 0.3rem ;
+             top: 70.5vh;
+        } 
+        }
+        @media (max-height:670px) {
+            .tags h3:nth-child(2){
+            left: 0.3rem ;
+            top: 37.6vh;
+        }
+        .tags h3:nth-child(3){
+            left: 0.3rem ;
+             top: 71.5vh;
+        } 
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="tags">
+        <h3>HTMl</h3>
+        <h3>CSS</h3>
+        <h3>JAVASCRIPT</h3>
+    </div>
+    <div class="editor-container">
+        <textarea id="html-code"></textarea>
+        <textarea id="css-code"></textarea>
+        <textarea id="js-code"></textarea>
+    </div>
+    <button class="button" onclick="saveCode()">Save</button>
+
+    <div id="preview" class="preview"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/javascript/javascript.min.js"></script>
+  
+
+
+    
+    <script>
+        const htmlCodeTextarea = CodeMirror.fromTextArea(document.getElementById('html-code'), {
+            mode: "htmlmixed",
+            lineNumbers: true,
+            autofocus: true,
+            lineWrapping: true, 
+            extraKeys: {
+                "Ctrl-Space": "autocomplete"
+            }
+        });
+        const cssCodeTextarea = CodeMirror.fromTextArea(document.getElementById('css-code'), {
+            mode: "css",
+            lineNumbers: true,
+            lineWrapping: true, 
+            extraKeys: {
+                "Ctrl-Space": "autocomplete"
+            }
+        });
+        const jsCodeTextarea = CodeMirror.fromTextArea(document.getElementById('js-code'), {
+            mode: "javascript",
+            lineNumbers: true,
+            lineWrapping: true, 
+            extraKeys: {
+                "Ctrl-Space": "autocomplete"
+            }
+        });
+        const previewDiv = document.getElementById('preview');
+    
+        function updatePreview() {
+    const htmlCode = htmlCodeTextarea.getValue();
+    const cssCode = cssCodeTextarea.getValue();
+    const jsCode = jsCodeTextarea.getValue();
+
+    // Remove style tags from CSS code
+    const sanitizedCSSCode = cssCode.replace(/<style.*?>/g, '').replace(/<\/style>/g, '');
+
+    // Create a script element
+    const script = document.createElement('script');
+    // Set the script content to the JavaScript code
+    script.textContent = jsCode;
+    // Append the script to the preview div
+    previewDiv.innerHTML = htmlCode + "<style>" + sanitizedCSSCode + "</style>";
+    previewDiv.appendChild(script);
+
+    // Save code to local storage
+    localStorage.setItem('htmlCode', htmlCode);
+    localStorage.setItem('cssCode', sanitizedCSSCode); // Save sanitized CSS code
+    localStorage.setItem('jsCode', jsCode);
+}
+
+    
+        function saveCode() {
+            const htmlCode = htmlCodeTextarea.getValue();
+            const cssCode = cssCodeTextarea.getValue();
+            const jsCode = jsCodeTextarea.getValue();
+            // Save code to local storage
+            localStorage.setItem('htmlCode', htmlCode);
+            localStorage.setItem('cssCode', cssCode);
+            localStorage.setItem('jsCode', jsCode);
+            alert("Code saved successfully!");
+        }
+    
+        // Load code from local storage if available
+        function loadCodeFromLocalStorage() {
+            const htmlCode = localStorage.getItem('htmlCode');
+            const cssCode = localStorage.getItem('cssCode');
+            const jsCode = localStorage.getItem('jsCode');
+            if (htmlCode) htmlCodeTextarea.setValue(htmlCode);
+            if (cssCode) cssCodeTextarea.setValue(cssCode);
+            if (jsCode) jsCodeTextarea.setValue(jsCode);
+        }
+    
+        // Load code from local storage initially
+        loadCodeFromLocalStorage();
+        updatePreview(); // Update preview initially
+    
+        htmlCodeTextarea.on("change", updatePreview);
+        cssCodeTextarea.on("change", updatePreview);
+        jsCodeTextarea.on("change", updatePreview);
+    </script>
+    
+</body>
+</html>
